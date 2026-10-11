@@ -17,6 +17,10 @@ jobs:
   hacs:
     name: HACS
     runs-on: ubuntu-latest
+    # The HACS action reads hacs.json and the manifest from raw.githubusercontent.com
+    # without a token: on a private repository it cannot, and reports a false
+    # failure. Informative while private, strict once public.
+    continue-on-error: ${{ github.event.repository.private }}
     steps:
       - uses: actions/checkout@v4
       - uses: hacs/action@main
