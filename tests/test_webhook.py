@@ -290,3 +290,28 @@ async def test_trip_events_do_not_use_the_deprecated_device_lookup(
         assert await send(message("trip_end")) == 200
     assert [e.event_type for e in events] == [EVENT_TRIP_START, EVENT_TRIP_END]
     assert events[0].data["device_id"] and events[1].data["device_id"]
+
+
+async def test_a_trip_event_carries_the_device_of_its_own_vehicle(
+    hass: HomeAssistant, entry, send
+) -> None:
+    """With two vehicles, the event of the second has the second one's device."""
+    events = []
+    hass.bus.async_listen(EVENT_TRIP_START, events.append)
+    hass.bus.async_listen(EVENT_TRIP_END, events.append)
+
+    await send(message("live", vehicle="Golf"))
+    await send(message("trip_start", vehicle="Panda"))
+    await send(message("trip_end", vehicle="Panda"))
+
+    # Not `async_get_device`: deprecated, and it raises on recent Home Assistant.
+    by_name = {
+        d.name: d
+        for d in dr.async_entries_for_config_entry(dr.async_get(hass), entry.entry_id)
+    }
+    golf, panda = by_name["Golf"], by_name["Panda"]
+    assert (DOMAIN, f"{entry.entry_id}_panda") in panda.identifiers
+    assert golf.id != panda.id
+    assert [e.data["device_id"] for e in events] == [panda.id, panda.id]
+    assert [e.data["vehicle"] for e in events] == ["Panda", "Panda"]
+
