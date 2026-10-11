@@ -22,6 +22,3 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
-          # The brand images live inside the integration (brand/). Submitting
-          # to home-assistant/brands is only needed for the default HACS list.
-          ignore: brands
