@@ -124,6 +124,8 @@ async def test_trip_start_and_end(hass: HomeAssistant, entry, send) -> None:
     start = events[0].data
     assert start["vehicle"] == "My car"
     assert start["fuel_level_pct"] == 62.0
+    # fields the car did not give are present and empty, never missing
+    assert start["odometer_km"] is None and start["dtc_count"] is None
     assert start["device_id"]
     # no position, no VIN, no address, whatever the sender added
     assert not {"vin", "latitude", "address", "extended", "rpm"} & set(start)

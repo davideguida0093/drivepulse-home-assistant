@@ -306,9 +306,10 @@ class DrivePulseHub:
             "device_id": device.id if device else None,
             "vehicle": vehicle.name,
         }
+        # Every field is always there (None when the car did not give it), so
+        # an automation template never trips on a missing key.
         for key in EVENT_FIELDS:
-            if key in payload and _plain(payload[key]):
-                data[key] = payload[key]
+            data[key] = payload[key] if _plain(payload.get(key)) else None
         if event == MSG_TRIP_END and vehicle.last_trip:
             data["trip"] = dict(vehicle.last_trip)
         self.hass.bus.async_fire(
