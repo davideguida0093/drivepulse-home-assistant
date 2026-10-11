@@ -6,6 +6,7 @@ from homeassistant import config_entries
 from homeassistant.components import webhook
 from homeassistant.const import CONF_WEBHOOK_ID
 from homeassistant.core import HomeAssistant
+from homeassistant.core_config import async_process_ha_core_config
 from homeassistant.data_entry_flow import FlowResultType
 
 from custom_components.drivepulse.const import CONF_LOCAL_ONLY, DOMAIN
@@ -62,3 +63,26 @@ async def test_unload_removes_the_webhook(hass: HomeAssistant, entry) -> None:
     assert await hass.config_entries.async_unload(entry.entry_id)
     await hass.async_block_till_done()
     assert WEBHOOK_ID not in hass.data["webhook"]
+
+
+async def test_the_shown_address_is_the_internal_one(hass: HomeAssistant) -> None:
+    """With both URLs configured the app is pointed at the LOCAL one."""
+    await async_process_ha_core_config(
+        hass,
+        {
+            "internal_url": "http://192.168.1.10:8123",
+            "external_url": "https://ha.example.com",
+        },
+    )
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": config_entries.SOURCE_USER}
+    )
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], {})
+    assert result["description_placeholders"]["webhook_url"].startswith(
+        "http://192.168.1.10:8123/api/webhook/"
+    )
+    entry = result["result"]
+    options = await hass.config_entries.options.async_init(entry.entry_id)
+    assert options["description_placeholders"]["webhook_url"].startswith(
+        "http://192.168.1.10:8123/api/webhook/"
+    )

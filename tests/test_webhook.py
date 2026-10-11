@@ -237,3 +237,29 @@ async def test_optional_sensors_come_back_after_restart(
     assert await hass.config_entries.async_setup(entry.entry_id)
     await hass.async_block_till_done()
     assert state(hass, entry, "sensor", "fuel_level").state == STATE_UNAVAILABLE
+
+
+async def test_a_long_vehicle_name_is_cut_at_64(hass: HomeAssistant, entry, send) -> None:
+    await send(message(vehicle="x" * 100))
+    names = [
+        d.name for d in dr.async_entries_for_config_entry(dr.async_get(hass), entry.entry_id)
+    ]
+    assert names == ["x" * 64]
+
+
+async def test_adapter_flag_that_is_not_a_boolean_is_ignored(
+    hass: HomeAssistant, entry, send
+) -> None:
+    await send(message(obd_connected="yes"))
+    assert state(hass, entry, "binary_sensor", "adapter_connected").state == STATE_UNAVAILABLE
+    await send(message(obd_connected=True))
+    assert state(hass, entry, "binary_sensor", "adapter_connected").state == STATE_ON
+
+
+async def test_no_more_than_fifty_trouble_codes_are_kept(
+    hass: HomeAssistant, entry, send
+) -> None:
+    codes = [f"P{i:04d}" for i in range(60)]
+    await send(message("trip_end", dtc_count=60, dtc=codes))
+    kept = state(hass, entry, "sensor", "trouble_codes").attributes["codes"]
+    assert kept == codes[:50]

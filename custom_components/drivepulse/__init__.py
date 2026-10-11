@@ -28,6 +28,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: DrivePulseConfigEntry) -
         hub.ensure_device(vehicle)
     entry.runtime_data = hub
 
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    # Registered last: a message cannot arrive before the entities can take it.
     webhook.async_register(
         hass,
         DOMAIN,
@@ -41,8 +44,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: DrivePulseConfigEntry) -
         lambda: webhook.async_unregister(hass, entry.data[CONF_WEBHOOK_ID])
     )
     entry.async_on_unload(entry.add_update_listener(_async_options_updated))
-
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 
 

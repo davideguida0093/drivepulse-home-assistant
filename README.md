@@ -1,6 +1,6 @@
 # DrivePulse for Home Assistant
 
-Sensors and trip events from your car, sent by the [DrivePulse](https://github.com/davideguida0093/drivepulse-home-assistant) app, with **no YAML to write**.
+Sensors and trip events from your car, sent by the DrivePulse app, with **no YAML to write**.
 
 DrivePulse reads your car through an OBD2 adapter. This integration gives the app a private address (a webhook) in your Home Assistant, and turns what the app sends into a device per vehicle with its sensors. Everything stays between your phone and your Home Assistant: no account, no cloud, no server of ours in the middle.
 
