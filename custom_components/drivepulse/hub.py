@@ -299,8 +299,19 @@ class DrivePulseHub:
     def _fire_trip_event(
         self, vehicle: Vehicle, event: str, payload: dict[str, Any]
     ) -> None:
-        device = dr.async_get(self.hass).async_get_device(
-            identifiers={device_identifier(self.entry.entry_id, vehicle.slug)}
+        # Not `async_get_device(identifiers=...)`: it is deprecated (identifiers
+        # are no longer unique across config entries) and raises on recent Home
+        # Assistant. Our devices are the ones of this entry, so look there.
+        identifier = device_identifier(self.entry.entry_id, vehicle.slug)
+        device = next(
+            (
+                found
+                for found in dr.async_entries_for_config_entry(
+                    dr.async_get(self.hass), self.entry.entry_id
+                )
+                if identifier in found.identifiers
+            ),
+            None,
         )
         data: dict[str, Any] = {
             "device_id": device.id if device else None,

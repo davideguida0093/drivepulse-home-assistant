@@ -14,6 +14,15 @@ from custom_components.drivepulse.const import CONF_LOCAL_ONLY, DOMAIN
 from .conftest import WEBHOOK_ID
 
 
+def _webhook(hass: HomeAssistant):
+    """The registered webhook: a dict on older Home Assistant, an object on newer."""
+    data = hass.data["webhook"][WEBHOOK_ID]
+    if isinstance(data, dict):
+        return type("W", (), {"local_only": data["local_only"],
+                              "allowed_methods": data["allowed_methods"]})
+    return data
+
+
 async def test_flow_creates_the_webhook_and_shows_its_address(
     hass: HomeAssistant,
 ) -> None:
@@ -41,8 +50,8 @@ async def test_only_one_entry(hass: HomeAssistant, entry) -> None:
 
 
 async def test_webhook_is_local_only_by_default(hass: HomeAssistant, entry) -> None:
-    assert hass.data["webhook"][WEBHOOK_ID]["local_only"] is True
-    assert hass.data["webhook"][WEBHOOK_ID]["allowed_methods"] == {"POST"}
+    assert _webhook(hass).local_only is True
+    assert set(_webhook(hass).allowed_methods) == {"POST"}
 
 
 async def test_options_switch_off_local_only(hass: HomeAssistant, entry) -> None:
@@ -55,7 +64,7 @@ async def test_options_switch_off_local_only(hass: HomeAssistant, entry) -> None
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     await hass.async_block_till_done()
-    assert hass.data["webhook"][WEBHOOK_ID]["local_only"] is False
+    assert _webhook(hass).local_only is False
 
 
 async def test_unload_removes_the_webhook(hass: HomeAssistant, entry) -> None:

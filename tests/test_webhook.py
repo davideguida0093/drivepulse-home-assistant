@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import sys
+from unittest.mock import patch
+
 from homeassistant.const import STATE_OFF, STATE_ON, STATE_UNAVAILABLE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
@@ -263,3 +266,27 @@ async def test_no_more_than_fifty_trouble_codes_are_kept(
     await send(message("trip_end", dtc_count=60, dtc=codes))
     kept = state(hass, entry, "sensor", "trouble_codes").attributes["codes"]
     assert kept == codes[:50]
+
+
+async def test_trip_events_do_not_use_the_deprecated_device_lookup(
+    hass: HomeAssistant, entry, send
+) -> None:
+    """`device_registry.async_get_device` is deprecated and raises on recent
+    Home Assistant: a trip start/end must reach the bus without calling it."""
+    events = []
+    hass.bus.async_listen(EVENT_TRIP_START, events.append)
+    hass.bus.async_listen(EVENT_TRIP_END, events.append)
+
+    original = dr.DeviceRegistry.async_get_device
+
+    def refuse(self, *args, **kwargs):
+        # Home Assistant itself may call it inside: only OUR calls are refused.
+        if "drivepulse" in sys._getframe(1).f_code.co_filename:
+            raise AssertionError("deprecated device_registry.async_get_device used")
+        return original(self, *args, **kwargs)
+
+    with patch.object(dr.DeviceRegistry, "async_get_device", refuse):
+        assert await send(message("trip_start")) == 200
+        assert await send(message("trip_end")) == 200
+    assert [e.event_type for e in events] == [EVENT_TRIP_START, EVENT_TRIP_END]
+    assert events[0].data["device_id"] and events[1].data["device_id"]
