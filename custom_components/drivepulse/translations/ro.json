@@ -1,0 +1,71 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Adaugă DrivePulse",
+        "description": "Aceasta creează o adresă privată (un webhook) către care aplicația DrivePulse trimite datele mașinii tale. Fără cont, fără cloud: datele rămân în Home Assistant. Selectează Trimite, apoi lipește adresa în aplicație."
+      }
+    },
+    "create_entry": {
+      "default": "DrivePulse este gata. În aplicație deschide „Trimite către Home Assistant”, lipește această adresă la „Adresa webhookului” și atinge „Trimitere de probă”:\n\n{webhook_url}\n\nCând ești plecat, folosește adresa HTTPS a Home Assistant (de exemplu Nabu Casa) sau un VPN și dezactivează „Doar rețea locală” în opțiunile integrării."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "description": "Adresa de lipit în aplicația DrivePulse („Trimite către Home Assistant”):\n\n{webhook_url}",
+        "data": {
+          "local_only": "Doar rețea locală"
+        },
+        "data_description": {
+          "local_only": "Acceptă aplicația doar din rețeaua de acasă (sau printr-un VPN). Dezactivează pentru a primi de pe internet prin adresa ta HTTPS."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "fuel_level": {
+        "name": "Nivel combustibil"
+      },
+      "battery_level": {
+        "name": "Nivel baterie"
+      },
+      "range": {
+        "name": "Autonomie"
+      },
+      "odometer": {
+        "name": "Kilometraj"
+      },
+      "battery_voltage": {
+        "name": "Baterie 12 V"
+      },
+      "coolant_temperature": {
+        "name": "Temperatura lichidului de răcire"
+      },
+      "trouble_codes": {
+        "name": "Coduri de eroare"
+      },
+      "fuel_volume": {
+        "name": "Combustibil"
+      },
+      "speed": {
+        "name": "Viteză"
+      },
+      "engine_speed": {
+        "name": "Turație motor"
+      },
+      "last_trip_distance": {
+        "name": "Ultima călătorie"
+      }
+    },
+    "binary_sensor": {
+      "trip_in_progress": {
+        "name": "Călătorie în curs"
+      },
+      "adapter_connected": {
+        "name": "Adaptor conectat"
+      }
+    }
+  }
+}

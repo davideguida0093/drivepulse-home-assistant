@@ -1,0 +1,71 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Dodaj DrivePulse",
+        "description": "Tworzy prywatny adres (webhook), na który aplikacja DrivePulse wysyła dane Twojego auta. Bez konta, bez chmury: dane zostają w Twoim Home Assistant. Wybierz Prześlij, a potem wklej adres w aplikacji."
+      }
+    },
+    "create_entry": {
+      "default": "DrivePulse jest gotowy. W aplikacji otwórz „Wysyłaj do Home Assistant”, wklej ten adres w polu „Adres webhooka” i dotknij „Wyślij próbnie”:\n\n{webhook_url}\n\nPoza domem użyj adresu HTTPS swojego Home Assistant (na przykład Nabu Casa) lub VPN i wyłącz „Tylko sieć lokalna” w opcjach integracji."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "description": "Adres do wklejenia w aplikacji DrivePulse („Wysyłaj do Home Assistant”):\n\n{webhook_url}",
+        "data": {
+          "local_only": "Tylko sieć lokalna"
+        },
+        "data_description": {
+          "local_only": "Przyjmuj dane z aplikacji tylko z sieci domowej (lub przez VPN). Wyłącz, aby odbierać z internetu przez adres HTTPS."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "fuel_level": {
+        "name": "Poziom paliwa"
+      },
+      "battery_level": {
+        "name": "Poziom baterii"
+      },
+      "range": {
+        "name": "Zasięg"
+      },
+      "odometer": {
+        "name": "Przebieg"
+      },
+      "battery_voltage": {
+        "name": "Akumulator 12 V"
+      },
+      "coolant_temperature": {
+        "name": "Temperatura płynu chłodzącego"
+      },
+      "trouble_codes": {
+        "name": "Kody błędów"
+      },
+      "fuel_volume": {
+        "name": "Paliwo"
+      },
+      "speed": {
+        "name": "Prędkość"
+      },
+      "engine_speed": {
+        "name": "Obroty silnika"
+      },
+      "last_trip_distance": {
+        "name": "Ostatnia podróż"
+      }
+    },
+    "binary_sensor": {
+      "trip_in_progress": {
+        "name": "Podróż w toku"
+      },
+      "adapter_connected": {
+        "name": "Adapter połączony"
+      }
+    }
+  }
+}

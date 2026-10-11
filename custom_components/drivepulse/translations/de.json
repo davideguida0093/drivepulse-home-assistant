@@ -1,0 +1,71 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "DrivePulse hinzufügen",
+        "description": "Das erzeugt eine private Adresse (einen Webhook), an die die DrivePulse-App die Fahrzeugdaten sendet. Kein Konto, keine Cloud: Die Daten bleiben in Ihrem Home Assistant. Wählen Sie „Absenden“ und fügen Sie die Adresse dann in der App ein."
+      }
+    },
+    "create_entry": {
+      "default": "DrivePulse ist bereit. Öffnen Sie in der App „An Home Assistant senden“, fügen Sie diese Adresse bei „Webhook-Adresse“ ein und tippen Sie auf „Testsendung“:\n\n{webhook_url}\n\nUnterwegs nutzen Sie die HTTPS-Adresse Ihres Home Assistant (z. B. Nabu Casa) oder ein VPN und schalten Sie in den Integrationsoptionen „Nur lokales Netzwerk“ aus."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "description": "Adresse für die DrivePulse-App („An Home Assistant senden“):\n\n{webhook_url}",
+        "data": {
+          "local_only": "Nur lokales Netzwerk"
+        },
+        "data_description": {
+          "local_only": "Die App nur aus dem Heimnetz (oder per VPN) akzeptieren. Ausschalten, um über Ihre HTTPS-Adresse aus dem Internet zu empfangen."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "fuel_level": {
+        "name": "Tankfüllstand"
+      },
+      "battery_level": {
+        "name": "Batterieladung"
+      },
+      "range": {
+        "name": "Reichweite"
+      },
+      "odometer": {
+        "name": "Kilometerstand"
+      },
+      "battery_voltage": {
+        "name": "12-V-Batterie"
+      },
+      "coolant_temperature": {
+        "name": "Kühlmitteltemperatur"
+      },
+      "trouble_codes": {
+        "name": "Fehlercodes"
+      },
+      "fuel_volume": {
+        "name": "Kraftstoff"
+      },
+      "speed": {
+        "name": "Geschwindigkeit"
+      },
+      "engine_speed": {
+        "name": "Motordrehzahl"
+      },
+      "last_trip_distance": {
+        "name": "Letzte Fahrt"
+      }
+    },
+    "binary_sensor": {
+      "trip_in_progress": {
+        "name": "Fahrt läuft"
+      },
+      "adapter_connected": {
+        "name": "Adapter verbunden"
+      }
+    }
+  }
+}

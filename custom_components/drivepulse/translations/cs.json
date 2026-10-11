@@ -1,0 +1,71 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Přidat DrivePulse",
+        "description": "Vytvoří soukromou adresu (webhook), na kterou aplikace DrivePulse posílá data vašeho auta. Žádný účet, žádný cloud: data zůstávají ve vašem Home Assistantu. Vyberte Odeslat a vložte adresu do aplikace."
+      }
+    },
+    "create_entry": {
+      "default": "DrivePulse je připraven. V aplikaci otevřete „Odesílat do Home Assistant“, vložte tuto adresu do „Adresa webhooku“ a klepněte na „Zkušební odeslání“:\n\n{webhook_url}\n\nMimo domov použijte HTTPS adresu svého Home Assistantu (např. Nabu Casa) nebo VPN a v možnostech integrace vypněte „Jen místní síť“."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "description": "Adresa k vložení do aplikace DrivePulse („Odesílat do Home Assistant“):\n\n{webhook_url}",
+        "data": {
+          "local_only": "Jen místní síť"
+        },
+        "data_description": {
+          "local_only": "Přijímat aplikaci jen z domovské sítě (nebo přes VPN). Vypněte pro příjem z internetu přes vaši HTTPS adresu."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "fuel_level": {
+        "name": "Hladina paliva"
+      },
+      "battery_level": {
+        "name": "Stav baterie"
+      },
+      "range": {
+        "name": "Dojezd"
+      },
+      "odometer": {
+        "name": "Počítadlo kilometrů"
+      },
+      "battery_voltage": {
+        "name": "Baterie 12 V"
+      },
+      "coolant_temperature": {
+        "name": "Teplota chladicí kapaliny"
+      },
+      "trouble_codes": {
+        "name": "Chybové kódy"
+      },
+      "fuel_volume": {
+        "name": "Palivo"
+      },
+      "speed": {
+        "name": "Rychlost"
+      },
+      "engine_speed": {
+        "name": "Otáčky motoru"
+      },
+      "last_trip_distance": {
+        "name": "Poslední jízda"
+      }
+    },
+    "binary_sensor": {
+      "trip_in_progress": {
+        "name": "Jízda probíhá"
+      },
+      "adapter_connected": {
+        "name": "Adaptér připojen"
+      }
+    }
+  }
+}

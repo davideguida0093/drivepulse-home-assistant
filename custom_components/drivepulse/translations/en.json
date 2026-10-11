@@ -1,0 +1,71 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add DrivePulse",
+        "description": "This creates a private address (a webhook) that the DrivePulse app sends your car's data to. No account, no cloud: the data stays in your Home Assistant. Select Submit, then paste the address into the app."
+      }
+    },
+    "create_entry": {
+      "default": "DrivePulse is ready. In the app open “Send to Home Assistant”, paste this address in “Webhook address” and tap “Test send”:\n\n{webhook_url}\n\nAway from home, use the HTTPS address of your Home Assistant (for example Nabu Casa) or a VPN, and turn off “Local network only” in the integration options."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "description": "Address to paste in the DrivePulse app (“Send to Home Assistant”):\n\n{webhook_url}",
+        "data": {
+          "local_only": "Local network only"
+        },
+        "data_description": {
+          "local_only": "Accept the app only from your home network (or a VPN). Turn off to receive from the internet through your HTTPS address."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "fuel_level": {
+        "name": "Fuel level"
+      },
+      "battery_level": {
+        "name": "Battery level"
+      },
+      "range": {
+        "name": "Range"
+      },
+      "odometer": {
+        "name": "Odometer"
+      },
+      "battery_voltage": {
+        "name": "12 V battery"
+      },
+      "coolant_temperature": {
+        "name": "Coolant temperature"
+      },
+      "trouble_codes": {
+        "name": "Trouble codes"
+      },
+      "fuel_volume": {
+        "name": "Fuel"
+      },
+      "speed": {
+        "name": "Speed"
+      },
+      "engine_speed": {
+        "name": "Engine speed"
+      },
+      "last_trip_distance": {
+        "name": "Last trip"
+      }
+    },
+    "binary_sensor": {
+      "trip_in_progress": {
+        "name": "Trip in progress"
+      },
+      "adapter_connected": {
+        "name": "Adapter connected"
+      }
+    }
+  }
+}

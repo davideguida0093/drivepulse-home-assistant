@@ -1,0 +1,71 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Adicionar DrivePulse",
+        "description": "Isto cria um endereço privado (um webhook) para onde a app DrivePulse envia os dados do seu carro. Sem conta, sem nuvem: os dados ficam no seu Home Assistant. Selecione Submeter e cole o endereço na app."
+      }
+    },
+    "create_entry": {
+      "default": "O DrivePulse está pronto. Na app abra “Enviar para o Home Assistant”, cole este endereço em “Endereço do webhook” e toque em “Testar envio”:\n\n{webhook_url}\n\nFora de casa, use o endereço HTTPS do seu Home Assistant (por exemplo Nabu Casa) ou uma VPN e desative “Apenas rede local” nas opções da integração."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "description": "Endereço a colar na app DrivePulse (“Enviar para o Home Assistant”):\n\n{webhook_url}",
+        "data": {
+          "local_only": "Apenas rede local"
+        },
+        "data_description": {
+          "local_only": "Aceitar a app apenas a partir da sua rede doméstica (ou de uma VPN). Desative para receber da internet através do seu endereço HTTPS."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "fuel_level": {
+        "name": "Nível de combustível"
+      },
+      "battery_level": {
+        "name": "Nível da bateria"
+      },
+      "range": {
+        "name": "Autonomia"
+      },
+      "odometer": {
+        "name": "Odómetro"
+      },
+      "battery_voltage": {
+        "name": "Bateria de 12 V"
+      },
+      "coolant_temperature": {
+        "name": "Temperatura do líquido de arrefecimento"
+      },
+      "trouble_codes": {
+        "name": "Códigos de erro"
+      },
+      "fuel_volume": {
+        "name": "Combustível"
+      },
+      "speed": {
+        "name": "Velocidade"
+      },
+      "engine_speed": {
+        "name": "Rotação do motor"
+      },
+      "last_trip_distance": {
+        "name": "Última viagem"
+      }
+    },
+    "binary_sensor": {
+      "trip_in_progress": {
+        "name": "Viagem em curso"
+      },
+      "adapter_connected": {
+        "name": "Adaptador ligado"
+      }
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Ajouter DrivePulse",
+        "description": "Cela crée une adresse privée (un webhook) à laquelle l'application DrivePulse envoie les données de votre voiture. Pas de compte, pas de cloud : les données restent dans votre Home Assistant. Sélectionnez Valider, puis collez l'adresse dans l'application."
+      }
+    },
+    "create_entry": {
+      "default": "DrivePulse est prêt. Dans l'application, ouvrez « Envoyer à Home Assistant », collez cette adresse dans « Adresse du webhook » et touchez « Tester l’envoi » :\n\n{webhook_url}\n\nHors de chez vous, utilisez l'adresse HTTPS de votre Home Assistant (par exemple Nabu Casa) ou un VPN, et désactivez « Réseau local uniquement » dans les options de l'intégration."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "description": "Adresse à coller dans l'application DrivePulse (« Envoyer à Home Assistant ») :\n\n{webhook_url}",
+        "data": {
+          "local_only": "Réseau local uniquement"
+        },
+        "data_description": {
+          "local_only": "N'accepter l'application que depuis votre réseau domestique (ou un VPN). Désactivez pour recevoir depuis internet via votre adresse HTTPS."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "fuel_level": {
+        "name": "Niveau de carburant"
+      },
+      "battery_level": {
+        "name": "Niveau de batterie"
+      },
+      "range": {
+        "name": "Autonomie"
+      },
+      "odometer": {
+        "name": "Compteur kilométrique"
+      },
+      "battery_voltage": {
+        "name": "Batterie 12 V"
+      },
+      "coolant_temperature": {
+        "name": "Température du liquide de refroidissement"
+      },
+      "trouble_codes": {
+        "name": "Codes d'erreur"
+      },
+      "fuel_volume": {
+        "name": "Carburant"
+      },
+      "speed": {
+        "name": "Vitesse"
+      },
+      "engine_speed": {
+        "name": "Régime moteur"
+      },
+      "last_trip_distance": {
+        "name": "Dernier trajet"
+      }
+    },
+    "binary_sensor": {
+      "trip_in_progress": {
+        "name": "Trajet en cours"
+      },
+      "adapter_connected": {
+        "name": "Adaptateur connecté"
+      }
+    }
+  }
+}

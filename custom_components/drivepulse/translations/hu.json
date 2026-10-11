@@ -1,0 +1,71 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "DrivePulse hozzáadása",
+        "description": "Ez létrehoz egy privát címet (webhookot), amelyre a DrivePulse alkalmazás küldi az autó adatait. Nincs fiók, nincs felhő: az adatok a Home Assistantban maradnak. Válassza a Küldés gombot, majd illessze be a címet az alkalmazásba."
+      }
+    },
+    "create_entry": {
+      "default": "A DrivePulse kész. Az alkalmazásban nyissa meg a „Küldés a Home Assistantnak” menüt, illessze be ezt a címet a „Webhook címe” mezőbe, és koppintson a „Próbaküldés” gombra:\n\n{webhook_url}\n\nOtthonon kívül használja a Home Assistant HTTPS címét (például Nabu Casa) vagy VPN-t, és kapcsolja ki az „Csak helyi hálózat” beállítást az integráció beállításaiban."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "description": "A DrivePulse alkalmazásba beillesztendő cím („Küldés a Home Assistantnak”):\n\n{webhook_url}",
+        "data": {
+          "local_only": "Csak helyi hálózat"
+        },
+        "data_description": {
+          "local_only": "Az alkalmazást csak az otthoni hálózatról (vagy VPN-ről) fogadja el. Kapcsolja ki, ha az internetről, a HTTPS címen keresztül akar adatot kapni."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "fuel_level": {
+        "name": "Üzemanyagszint"
+      },
+      "battery_level": {
+        "name": "Akkumulátorszint"
+      },
+      "range": {
+        "name": "Hatótávolság"
+      },
+      "odometer": {
+        "name": "Kilométeróra"
+      },
+      "battery_voltage": {
+        "name": "12 V-os akkumulátor"
+      },
+      "coolant_temperature": {
+        "name": "Hűtőfolyadék hőmérséklete"
+      },
+      "trouble_codes": {
+        "name": "Hibakódok"
+      },
+      "fuel_volume": {
+        "name": "Üzemanyag"
+      },
+      "speed": {
+        "name": "Sebesség"
+      },
+      "engine_speed": {
+        "name": "Motorfordúlatszám"
+      },
+      "last_trip_distance": {
+        "name": "Utolsó út"
+      }
+    },
+    "binary_sensor": {
+      "trip_in_progress": {
+        "name": "Út folyamatban"
+      },
+      "adapter_connected": {
+        "name": "Adapter csatlakoztatva"
+      }
+    }
+  }
+}

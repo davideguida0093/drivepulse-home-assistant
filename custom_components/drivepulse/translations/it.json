@@ -1,0 +1,71 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Aggiungi DrivePulse",
+        "description": "Crea un indirizzo privato (un webhook) a cui l'app DrivePulse manda i dati della tua auto. Nessun account, nessun cloud: i dati restano nel tuo Home Assistant. Premi Invia, poi incolla l'indirizzo nell'app."
+      }
+    },
+    "create_entry": {
+      "default": "DrivePulse è pronto. Nell'app apri “Invia a Home Assistant”, incolla questo indirizzo in “Indirizzo del webhook” e tocca “Prova invio”:\n\n{webhook_url}\n\nFuori casa usa l'indirizzo HTTPS del tuo Home Assistant (per esempio Nabu Casa) o una VPN, e disattiva “Solo rete locale” nelle opzioni dell'integrazione."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "description": "Indirizzo da incollare nell'app DrivePulse (“Invia a Home Assistant”):\n\n{webhook_url}",
+        "data": {
+          "local_only": "Solo rete locale"
+        },
+        "data_description": {
+          "local_only": "Accetta l'app solo dalla rete di casa (o da una VPN). Disattiva per ricevere da internet tramite il tuo indirizzo HTTPS."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "fuel_level": {
+        "name": "Livello carburante"
+      },
+      "battery_level": {
+        "name": "Livello batteria"
+      },
+      "range": {
+        "name": "Autonomia"
+      },
+      "odometer": {
+        "name": "Contachilometri"
+      },
+      "battery_voltage": {
+        "name": "Batteria 12 V"
+      },
+      "coolant_temperature": {
+        "name": "Temperatura refrigerante"
+      },
+      "trouble_codes": {
+        "name": "Codici errore"
+      },
+      "fuel_volume": {
+        "name": "Carburante"
+      },
+      "speed": {
+        "name": "Velocità"
+      },
+      "engine_speed": {
+        "name": "Giri motore"
+      },
+      "last_trip_distance": {
+        "name": "Ultimo viaggio"
+      }
+    },
+    "binary_sensor": {
+      "trip_in_progress": {
+        "name": "Viaggio in corso"
+      },
+      "adapter_connected": {
+        "name": "Adattatore collegato"
+      }
+    }
+  }
+}

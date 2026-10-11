@@ -1,0 +1,71 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Añadir DrivePulse",
+        "description": "Esto crea una dirección privada (un webhook) a la que la app DrivePulse envía los datos de tu coche. Sin cuenta, sin nube: los datos se quedan en tu Home Assistant. Pulsa Enviar y pega la dirección en la app."
+      }
+    },
+    "create_entry": {
+      "default": "DrivePulse está listo. En la app abre «Enviar a Home Assistant», pega esta dirección en «Dirección del webhook» y toca «Probar envío»:\n\n{webhook_url}\n\nFuera de casa usa la dirección HTTPS de tu Home Assistant (por ejemplo Nabu Casa) o una VPN, y desactiva «Solo red local» en las opciones de la integración."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "description": "Dirección para pegar en la app DrivePulse («Enviar a Home Assistant»):\n\n{webhook_url}",
+        "data": {
+          "local_only": "Solo red local"
+        },
+        "data_description": {
+          "local_only": "Aceptar la app solo desde tu red doméstica (o una VPN). Desactívalo para recibir desde internet con tu dirección HTTPS."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "fuel_level": {
+        "name": "Nivel de combustible"
+      },
+      "battery_level": {
+        "name": "Nivel de batería"
+      },
+      "range": {
+        "name": "Autonomía"
+      },
+      "odometer": {
+        "name": "Odómetro"
+      },
+      "battery_voltage": {
+        "name": "Batería de 12 V"
+      },
+      "coolant_temperature": {
+        "name": "Temperatura del refrigerante"
+      },
+      "trouble_codes": {
+        "name": "Códigos de error"
+      },
+      "fuel_volume": {
+        "name": "Combustible"
+      },
+      "speed": {
+        "name": "Velocidad"
+      },
+      "engine_speed": {
+        "name": "Régimen del motor"
+      },
+      "last_trip_distance": {
+        "name": "Último viaje"
+      }
+    },
+    "binary_sensor": {
+      "trip_in_progress": {
+        "name": "Viaje en curso"
+      },
+      "adapter_connected": {
+        "name": "Adaptador conectado"
+      }
+    }
+  }
+}
