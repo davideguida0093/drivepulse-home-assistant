@@ -40,10 +40,14 @@ async def remove(
     # the websocket command lives in the "config" component
     assert await async_setup_component(hass, "config", {})
     client = await hass_ws_client(hass)
+    # The alias with config_entry_id: it exists on every Home Assistant this
+    # integration supports (2024.12 on), the newer config/device_registry/remove
+    # does not.
     await client.send_json(
         {
             "id": 1,
-            "type": "config/device_registry/remove",
+            "type": "config/device_registry/remove_config_entry",
+            "config_entry_id": entry.entry_id,
             "device_id": device_id,
         }
     )
