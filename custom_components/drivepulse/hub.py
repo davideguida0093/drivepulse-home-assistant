@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
-from dataclasses import dataclass, field
 import logging
 import math
+from collections.abc import Callable
+from dataclasses import dataclass, field
 from typing import Any
 
 from aiohttp import web
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import device_registry as dr
@@ -184,6 +183,31 @@ class DrivePulseHub:
 
     async def async_remove_storage(self) -> None:
         await self._store.async_remove()
+
+    def slug_of_device(self, identifiers: set[tuple[str, str]]) -> str | None:
+        """The vehicle slug behind a device's identifiers, or None if not ours."""
+        prefix = f"{self.entry.entry_id}_"
+        for domain, value in identifiers:
+            if domain == DOMAIN and value.startswith(prefix):
+                return value[len(prefix) :]
+        return None
+
+    async def async_forget_vehicle(self, slug: str) -> bool:
+        """Drop one vehicle and save at once; False while it is in a trip.
+
+        Called when the user deletes the vehicle's device. The vehicle must
+        leave the store too, or it would be back on the next start and keep
+        counting against the vehicle limit. A vehicle in the middle of a trip
+        is kept: its trip_end is on the way and would recreate it anyway.
+        """
+        vehicle = self.vehicles.get(slug)
+        if vehicle is None:
+            return True  # already forgotten: nothing to do
+        if vehicle.in_trip:
+            return False
+        del self.vehicles[slug]
+        await self.async_flush()
+        return True
 
     # -- platforms register here to create entities as vehicles/keys appear --
 

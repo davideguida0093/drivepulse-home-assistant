@@ -11,6 +11,7 @@ from homeassistant.components import webhook
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_WEBHOOK_ID, Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
 
 from .const import CONF_LOCAL_ONLY, DEFAULT_LOCAL_ONLY, DOMAIN
 from .hub import DrivePulseHub
@@ -61,3 +62,19 @@ async def async_unload_entry(hass: HomeAssistant, entry: DrivePulseConfigEntry) 
 async def async_remove_entry(hass: HomeAssistant, entry: DrivePulseConfigEntry) -> None:
     """Forget the saved vehicles of a removed integration."""
     await DrivePulseHub(hass, entry).async_remove_storage()
+
+
+async def async_remove_config_entry_device(
+    hass: HomeAssistant, entry: DrivePulseConfigEntry, device_entry: dr.DeviceEntry
+) -> bool:
+    """Let the user delete a vehicle's device: the vehicle is forgotten with it.
+
+    A renamed or mistyped vehicle name leaves a device behind. Deleting that
+    device must also drop the vehicle from the store, or it would come back
+    on the next start and keep its place in the vehicle limit. The vehicle
+    that is in a trip right now cannot be deleted until the trip ends.
+    """
+    slug = entry.runtime_data.slug_of_device(device_entry.identifiers)
+    if slug is None:
+        return True  # not a vehicle of ours: nothing to forget
+    return await entry.runtime_data.async_forget_vehicle(slug)
