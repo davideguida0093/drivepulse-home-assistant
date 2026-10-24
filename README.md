@@ -55,13 +55,13 @@ automation:
 
 ## Install
 
-### 1. With HACS (as a custom repository)
+### 1. With HACS
 
 1. In Home Assistant open **HACS**.
-2. Menu (three dots, top right) → **Custom repositories**.
-3. Repository: `https://github.com/davideguida0093/drivepulse-home-assistant` · Type: **Integration** → **Add**.
-4. Find **DrivePulse** in HACS, open it and select **Download**.
-5. **Restart Home Assistant.**
+2. Search for **DrivePulse**, open it and select **Download**.
+3. **Restart Home Assistant.**
+
+DrivePulse is in the HACS default list, so no custom repository is needed. If you added it earlier as a custom repository, nothing changes: the installed integration keeps working and keeps receiving updates.
 
 ### 2. Add the integration
 
