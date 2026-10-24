@@ -6,13 +6,11 @@ from collections.abc import Callable
 from typing import Any
 
 import pytest
-from pytest_homeassistant_custom_component.common import MockConfigEntry
-
-from homeassistant.components import webhook
 from homeassistant.const import CONF_WEBHOOK_ID
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 from homeassistant.setup import async_setup_component
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.drivepulse.const import DOMAIN
 
@@ -91,8 +89,13 @@ def message(event: str = "live", **fields: Any) -> dict[str, Any]:
     return body
 
 
-def find(hass: HomeAssistant, entry: MockConfigEntry, domain: str, key: str,
-         vehicle: str = "my_car") -> str | None:
+def find(
+    hass: HomeAssistant,
+    entry: MockConfigEntry,
+    domain: str,
+    key: str,
+    vehicle: str = "my_car",
+) -> str | None:
     """The entity id of a vehicle's entity, by its unique id."""
     return er.async_get(hass).async_get_entity_id(
         domain, DOMAIN, f"{entry.entry_id}_{vehicle}_{key}"

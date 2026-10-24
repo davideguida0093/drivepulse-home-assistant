@@ -41,9 +41,13 @@ async def async_setup_entry(
         ]
 
     async_add_entities(
-        entity for vehicle in hub.vehicles.values() for entity in vehicle_entities(vehicle)
+        entity
+        for vehicle in hub.vehicles.values()
+        for entity in vehicle_entities(vehicle)
     )
-    hub.listen_new_vehicle(lambda vehicle: async_add_entities(vehicle_entities(vehicle)))
+    hub.listen_new_vehicle(
+        lambda vehicle: async_add_entities(vehicle_entities(vehicle))
+    )
 
 
 class DrivePulseBinarySensor(DrivePulseEntity, BinarySensorEntity):

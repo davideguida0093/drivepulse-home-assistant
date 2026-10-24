@@ -130,9 +130,13 @@ async def async_setup_entry(
         return found
 
     async_add_entities(
-        entity for vehicle in hub.vehicles.values() for entity in vehicle_entities(vehicle)
+        entity
+        for vehicle in hub.vehicles.values()
+        for entity in vehicle_entities(vehicle)
     )
-    hub.listen_new_vehicle(lambda vehicle: async_add_entities(vehicle_entities(vehicle)))
+    hub.listen_new_vehicle(
+        lambda vehicle: async_add_entities(vehicle_entities(vehicle))
+    )
 
     def optional_sensor(vehicle: Vehicle, key: str) -> None:
         """A sensor that appears when the car first sends its number."""
@@ -185,6 +189,4 @@ class DrivePulseLastTrip(DrivePulseSensor):
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:
         trip = self._vehicle.last_trip
-        return (
-            {k: v for k, v in trip.items() if k != "distance_km"} if trip else None
-        )
+        return {k: v for k, v in trip.items() if k != "distance_km"} if trip else None

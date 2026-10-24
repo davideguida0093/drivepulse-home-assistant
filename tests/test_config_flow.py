@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from homeassistant import config_entries
-from homeassistant.components import webhook
 from homeassistant.const import CONF_WEBHOOK_ID
 from homeassistant.core import HomeAssistant
 from homeassistant.core_config import async_process_ha_core_config
@@ -18,8 +17,14 @@ def _webhook(hass: HomeAssistant):
     """The registered webhook: a dict on older Home Assistant, an object on newer."""
     data = hass.data["webhook"][WEBHOOK_ID]
     if isinstance(data, dict):
-        return type("W", (), {"local_only": data["local_only"],
-                              "allowed_methods": data["allowed_methods"]})
+        return type(
+            "W",
+            (),
+            {
+                "local_only": data["local_only"],
+                "allowed_methods": data["allowed_methods"],
+            },
+        )
     return data
 
 
@@ -36,7 +41,10 @@ async def test_flow_creates_the_webhook_and_shows_its_address(
     assert result["type"] is FlowResultType.CREATE_ENTRY
     webhook_id = result["data"][CONF_WEBHOOK_ID]
     assert len(webhook_id) >= 20
-    assert f"/api/webhook/{webhook_id}" in result["description_placeholders"]["webhook_url"]
+    assert (
+        f"/api/webhook/{webhook_id}"
+        in result["description_placeholders"]["webhook_url"]
+    )
     # No VIN, no account, nothing else is stored.
     assert set(result["data"]) == {CONF_WEBHOOK_ID}
 

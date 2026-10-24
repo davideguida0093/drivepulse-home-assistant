@@ -7,7 +7,10 @@ import pathlib
 
 import pytest
 
-DIR = pathlib.Path(__file__).resolve().parent.parent / "custom_components/drivepulse/translations"
+DIR = (
+    pathlib.Path(__file__).resolve().parent.parent
+    / "custom_components/drivepulse/translations"
+)
 FILES = sorted(DIR.glob("*.json"))
 
 
@@ -24,7 +27,16 @@ EN = dict(_paths(json.loads((DIR / "en.json").read_text(encoding="utf-8"))))
 
 def test_the_ten_languages_of_the_app_are_there() -> None:
     assert {f.stem for f in FILES} == {
-        "en", "it", "de", "fr", "es", "pt", "cs", "hu", "pl", "ro"
+        "en",
+        "it",
+        "de",
+        "fr",
+        "es",
+        "pt",
+        "cs",
+        "hu",
+        "pl",
+        "ro",
     }
 
 

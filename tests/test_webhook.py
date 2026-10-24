@@ -70,7 +70,9 @@ async def test_things_that_are_not_numbers_are_unavailable(
     await send(message(fuel_level_pct=50))
     for bad in (True, "62", [1], {"a": 1}):
         assert await send(message(fuel_level_pct=bad)) == 200
-        assert state(hass, entry, "sensor", "fuel_level").state == STATE_UNAVAILABLE, bad
+        assert state(hass, entry, "sensor", "fuel_level").state == STATE_UNAVAILABLE, (
+            bad
+        )
         await send(message(fuel_level_pct=50))
         assert state(hass, entry, "sensor", "fuel_level").state == "50"
 
@@ -79,18 +81,22 @@ async def test_nan_and_infinity_are_refused(hass: HomeAssistant, entry, send) ->
     """Not valid JSON: refused, and the sensor keeps what it had."""
     await send(message(fuel_level_pct=50))
     for bad in ("NaN", "Infinity", "-Infinity"):
-        raw = '{"event": "live", "vehicle": "My car", "fuel_level_pct": %s}' % bad
+        raw = f'{{"event": "live", "vehicle": "My car", "fuel_level_pct": {bad}}}'
         assert await send(None, raw=raw) == 400
         assert state(hass, entry, "sensor", "fuel_level").state == "50"
 
 
-async def test_electric_car_has_charge_not_fuel(hass: HomeAssistant, entry, send) -> None:
+async def test_electric_car_has_charge_not_fuel(
+    hass: HomeAssistant, entry, send
+) -> None:
     await send(message(vehicle="My EV", fuel_level_pct=None, hv_soc_pct=71.5))
     assert state(hass, entry, "sensor", "battery_level", "my_ev").state == "71.5"
     assert find(hass, entry, "sensor", "fuel_level", "my_ev") is None
 
 
-async def test_petrol_car_has_no_battery_level(hass: HomeAssistant, entry, send) -> None:
+async def test_petrol_car_has_no_battery_level(
+    hass: HomeAssistant, entry, send
+) -> None:
     await send(message())
     assert find(hass, entry, "sensor", "battery_level") is None
 
@@ -99,8 +105,13 @@ async def test_sticky_values_survive_a_message_without_them(
     hass: HomeAssistant, entry, send
 ) -> None:
     await send(
-        message("trip_end", odometer_km=20364.8, dtc_count=2, dtc=["P0420", "P0171"],
-                range_km=380)
+        message(
+            "trip_end",
+            odometer_km=20364.8,
+            dtc_count=2,
+            dtc=["P0420", "P0171"],
+            range_km=380,
+        )
     )
     assert state(hass, entry, "sensor", "odometer").state == "20364.8"
     codes = state(hass, entry, "sensor", "trouble_codes")
@@ -113,7 +124,9 @@ async def test_sticky_values_survive_a_message_without_them(
     assert state(hass, entry, "sensor", "range").state == "380"
     # while the fast ones follow the car
     await send(message(rpm=None, coolant_temp_c=None))
-    assert state(hass, entry, "sensor", "coolant_temperature").state == STATE_UNAVAILABLE
+    assert (
+        state(hass, entry, "sensor", "coolant_temperature").state == STATE_UNAVAILABLE
+    )
 
 
 async def test_trip_start_and_end(hass: HomeAssistant, entry, send) -> None:
@@ -133,10 +146,18 @@ async def test_trip_start_and_end(hass: HomeAssistant, entry, send) -> None:
     # no position, no VIN, no address, whatever the sender added
     assert not {"vin", "latitude", "address", "extended", "rpm"} & set(start)
 
-    trip = {"id": 5, "start": "2026-10-11T00:41:09Z", "end": "2026-10-11T00:42:51Z",
-            "distance_km": 12.5, "duration_min": 14.0, "avg_speed_kmh": 47.5,
-            "max_speed_kmh": 90.0, "avg_consumption_l_100km": 6.8,
-            "odometer_km": 20364.8, "route": "secret"}
+    trip = {
+        "id": 5,
+        "start": "2026-10-11T00:41:09Z",
+        "end": "2026-10-11T00:42:51Z",
+        "distance_km": 12.5,
+        "duration_min": 14.0,
+        "avg_speed_kmh": 47.5,
+        "max_speed_kmh": 90.0,
+        "avg_consumption_l_100km": 6.8,
+        "odometer_km": 20364.8,
+        "route": "secret",
+    }
     await send(message("trip_end", odometer_km=20364.8, obd_connected=False, trip=trip))
     assert state(hass, entry, "binary_sensor", "trip_in_progress").state == STATE_OFF
     assert state(hass, entry, "binary_sensor", "adapter_connected").state == STATE_OFF
@@ -162,7 +183,8 @@ async def test_two_vehicles_two_devices(hass: HomeAssistant, entry, send) -> Non
     await send(message(vehicle="Golf"))
     await send(message(vehicle="Panda", battery_voltage=12.2))
     names = sorted(
-        d.name for d in dr.async_entries_for_config_entry(dr.async_get(hass), entry.entry_id)
+        d.name
+        for d in dr.async_entries_for_config_entry(dr.async_get(hass), entry.entry_id)
     )
     assert names == ["Golf", "Panda"]
     assert state(hass, entry, "sensor", "battery_voltage", "panda").state == "12.2"
@@ -173,7 +195,8 @@ async def test_vehicle_without_a_name_gets_the_default(hass, entry, send) -> Non
     await send(message(vehicle=None))
     await send(message(vehicle="   "))
     names = [
-        d.name for d in dr.async_entries_for_config_entry(dr.async_get(hass), entry.entry_id)
+        d.name
+        for d in dr.async_entries_for_config_entry(dr.async_get(hass), entry.entry_id)
     ]
     assert names == ["DrivePulse"]
 
@@ -220,7 +243,9 @@ async def test_restart_keeps_the_vehicle_and_the_slow_values(
     await hass.async_block_till_done()
 
     assert state(hass, entry, "sensor", "odometer").state == "1000.5"
-    assert state(hass, entry, "sensor", "trouble_codes").attributes["codes"] == ["P0300"]
+    assert state(hass, entry, "sensor", "trouble_codes").attributes["codes"] == [
+        "P0300"
+    ]
     assert state(hass, entry, "binary_sensor", "trip_in_progress").state == STATE_ON
     # a live value from before the restart is not shown as if it were fresh
     assert state(hass, entry, "sensor", "battery_voltage").state == STATE_UNAVAILABLE
@@ -242,10 +267,13 @@ async def test_optional_sensors_come_back_after_restart(
     assert state(hass, entry, "sensor", "fuel_level").state == STATE_UNAVAILABLE
 
 
-async def test_a_long_vehicle_name_is_cut_at_64(hass: HomeAssistant, entry, send) -> None:
+async def test_a_long_vehicle_name_is_cut_at_64(
+    hass: HomeAssistant, entry, send
+) -> None:
     await send(message(vehicle="x" * 100))
     names = [
-        d.name for d in dr.async_entries_for_config_entry(dr.async_get(hass), entry.entry_id)
+        d.name
+        for d in dr.async_entries_for_config_entry(dr.async_get(hass), entry.entry_id)
     ]
     assert names == ["x" * 64]
 
@@ -254,7 +282,10 @@ async def test_adapter_flag_that_is_not_a_boolean_is_ignored(
     hass: HomeAssistant, entry, send
 ) -> None:
     await send(message(obd_connected="yes"))
-    assert state(hass, entry, "binary_sensor", "adapter_connected").state == STATE_UNAVAILABLE
+    assert (
+        state(hass, entry, "binary_sensor", "adapter_connected").state
+        == STATE_UNAVAILABLE
+    )
     await send(message(obd_connected=True))
     assert state(hass, entry, "binary_sensor", "adapter_connected").state == STATE_ON
 
@@ -314,4 +345,3 @@ async def test_a_trip_event_carries_the_device_of_its_own_vehicle(
     assert golf.id != panda.id
     assert [e.data["device_id"] for e in events] == [panda.id, panda.id]
     assert [e.data["vehicle"] for e in events] == ["Panda", "Panda"]
-
