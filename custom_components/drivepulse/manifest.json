@@ -1,7 +1,6 @@
 {
   "domain": "drivepulse",
   "name": "DrivePulse",
-  "categories": ["vehicles_transport.cars_evs"],
   "codeowners": ["@davideguida0093"],
   "config_flow": true,
   "dependencies": ["webhook"],
@@ -11,5 +10,5 @@
   "issue_tracker": "https://github.com/davideguida0093/drivepulse-home-assistant/issues",
   "requirements": [],
   "single_config_entry": true,
-  "version": "0.1.3"
+  "version": "0.1.2"
 }
