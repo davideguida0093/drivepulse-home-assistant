@@ -2,6 +2,8 @@
 
 Sensors and trip events from your car, sent by the DrivePulse app, with **no YAML to write**.
 
+[![Open your Home Assistant instance and show this repository in the Marketplace.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=davideguida0093&repository=drivepulse-home-assistant&category=integration)
+
 DrivePulse reads your car through an OBD2 adapter. This integration gives the app a private address (a webhook) in your Home Assistant, and turns what the app sends into a device per vehicle with its sensors. Everything stays between your phone and your Home Assistant: no account, no cloud, no server of ours in the middle.
 
 > This integration replaces the YAML block the app's help page used to show. If you pasted that block into `configuration.yaml`, remove it before adding the integration, or you will have the same sensors twice.
@@ -61,7 +63,7 @@ automation:
 2. Search for **DrivePulse**, open it and select **Download**.
 3. **Restart Home Assistant.**
 
-DrivePulse is in the HACS default list, so no custom repository is needed. If you added it earlier as a custom repository, nothing changes: the installed integration keeps working and keeps receiving updates.
+DrivePulse is in the HACS default list, so no custom repository is needed. On Home Assistant 2026.11 or later the same catalog is built in as **Settings > Marketplace**: search for DrivePulse there (or use the badge at the top of this page), the steps are the same. If you added it earlier as a custom repository, nothing changes: the installed integration keeps working and keeps receiving updates.
 
 ### 2. Add the integration
 
