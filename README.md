@@ -4,7 +4,7 @@ Sensors and trip events from your car, sent by the DrivePulse app, with **no YAM
 
 [![Open your Home Assistant instance and show this repository in the Marketplace.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=davideguida0093&repository=drivepulse-home-assistant&category=integration)
 
-DrivePulse reads your car through an OBD2 adapter. This integration gives the app a private address (a webhook) in your Home Assistant, and turns what the app sends into a device per vehicle with its sensors. Everything stays between your phone and your Home Assistant: no account, no cloud, no server of ours in the middle.
+DrivePulse reads your car through an OBD2 adapter. This integration gives the app a private address (a webhook) in your Home Assistant, and turns what the app sends into a device per vehicle with its sensors. The app sends data only to your Home Assistant, and only if you turn sending on: no account, no cloud, no server of ours in the middle.
 
 > This integration replaces the YAML block the app's help page used to show. If you pasted that block into `configuration.yaml`, remove it before adding the integration, or you will have the same sensors twice.
 
@@ -38,22 +38,188 @@ Two events are fired on the Home Assistant bus, so you can automate "the car lef
 
 Only the numbers above are sent: **no GPS position, no VIN, no addresses**. Home Assistant already knows where your phone is.
 
-Example: a notification when you arrive with less than a quarter of a tank.
+## Automation examples
+
+Paste one in **Settings > Automations & scenes > Create automation > Create new automation**, then **⋮ > Edit in YAML**. In these examples the car is called "My car": use your car's name as Home Assistant shows it (a car called Golf has `sensor.golf_trouble_codes`). Replace `notify.notify` with your phone, for example `notify.mobile_app_marks_iphone`.
+
+### Low fuel
+
+At the end of a trip, when less than 20 % is left. On an electric car use `hv_soc_pct`.
 
 ```yaml
-automation:
-  - alias: "Low fuel on arrival"
-    triggers:
-      - trigger: event
-        event_type: drivepulse_trip_end
-    conditions:
-      - condition: template
-        value_template: "{{ trigger.event.data.fuel_level_pct is number and trigger.event.data.fuel_level_pct < 25 }}"
-    actions:
-      - action: notify.notify
-        data:
-          message: "{{ trigger.event.data.vehicle }}: {{ trigger.event.data.fuel_level_pct }} % fuel left"
+alias: "DrivePulse: low fuel"
+triggers:
+  - trigger: event
+    event_type: drivepulse_trip_end
+conditions:
+  - condition: template
+    value_template: >
+      {{ trigger.event.data.fuel_level_pct is number
+         and trigger.event.data.fuel_level_pct < 20 }}
+actions:
+  - action: notify.notify
+    data:
+      title: "Low fuel"
+      message: >
+        {{ trigger.event.data.vehicle }}:
+        {{ trigger.event.data.fuel_level_pct | round(0) | int }} % left in the tank.
 ```
+
+### New trouble code
+
+Only codes that were not there before; the same code does not notify twice.
+
+```yaml
+alias: "DrivePulse: new trouble code"
+triggers:
+  - trigger: state
+    entity_id: sensor.my_car_trouble_codes
+conditions:
+  - condition: template
+    value_template: >
+      {% set before = trigger.from_state.attributes.codes | default([])
+         if trigger.from_state is not none else none %}
+      {% set after = trigger.to_state.attributes.codes | default([]) %}
+      {{ before is not none
+         and trigger.from_state.state not in ['unknown', 'unavailable']
+         and after | reject('in', before) | list | count > 0 }}
+actions:
+  - action: notify.notify
+    data:
+      title: "New trouble code"
+      message: >
+        {% set before = trigger.from_state.attributes.codes | default([]) %}
+        {{ trigger.to_state.attributes.codes | reject('in', before) | join(', ') }}:
+        open DrivePulse to see what it means and whether you can drive.
+```
+
+### Low 12 V battery
+
+Below 12 V for more than a minute, so the dip while cranking does not count. The OBD reading is usually 0.2-0.4 V lower than a multimeter's.
+
+```yaml
+alias: "DrivePulse: low 12 V battery"
+triggers:
+  - trigger: numeric_state
+    entity_id: sensor.my_car_12_v_battery
+    below: 12
+    for: "00:01:00"
+actions:
+  - action: notify.notify
+    data:
+      title: "Low 12 V battery"
+      message: >
+        {{ states('sensor.my_car_12_v_battery') }} V. With the engine off the
+        battery is low on charge; with the engine running the alternator is not
+        charging. Run the battery test in DrivePulse.
+```
+
+### Trip summary
+
+```yaml
+alias: "DrivePulse: trip summary"
+triggers:
+  - trigger: event
+    event_type: drivepulse_trip_end
+conditions:
+  - condition: template
+    value_template: >
+      {{ trigger.event.data.trip is defined
+         and trigger.event.data.trip.distance_km is number }}
+actions:
+  - action: notify.notify
+    data:
+      title: "{{ trigger.event.data.vehicle }}: trip finished"
+      message: >
+        {% set t = trigger.event.data.trip %}
+        {{ '%.1f' | format(t.distance_km) }} km
+        {%- if t.duration_min is number %} in {{ t.duration_min | round(0) | int }} min{% endif %}
+        {%- if t.avg_speed_kmh is number %}, average {{ t.avg_speed_kmh | round(0) | int }} km/h{% endif %}
+        {%- if t.avg_consumption_l_100km is number %}, {{ '%.1f' | format(t.avg_consumption_l_100km) }} l/100 km{% endif %}.
+```
+
+### Inspection reminder
+
+First create a date helper: **Settings > Devices & services > Helpers > Create helper > Date and/or time**, name **Car inspection**, date only. Every time you arrive in the 30 days before that date, you get a reminder with the odometer.
+
+```yaml
+alias: "DrivePulse: inspection reminder"
+triggers:
+  - trigger: event
+    event_type: drivepulse_trip_end
+conditions:
+  - condition: template
+    value_template: >
+      {% set ts = state_attr('input_datetime.car_inspection', 'timestamp') %}
+      {% set days = ((ts - as_timestamp(today_at())) / 86400) | round(0) | int
+         if ts is number else -1 %}
+      {{ 1 <= days <= 30 }}
+actions:
+  - action: notify.notify
+    data:
+      title: "Inspection coming up"
+      message: >
+        {% set ts = state_attr('input_datetime.car_inspection', 'timestamp') %}
+        {% set days = ((ts - as_timestamp(today_at())) / 86400) | round(0) | int %}
+        {{ trigger.event.data.vehicle }}: the inspection is due
+        in {{ days }} {{ 'day' if days == 1 else 'days' }}.
+        {%- if trigger.event.data.odometer_km is number %}
+        Odometer: {{ '{:,}'.format(trigger.event.data.odometer_km | round(0) | int) }} km.{% endif %}
+```
+
+### Dashboard card
+
+**Edit dashboard > Add card > Manual**, paste:
+
+```yaml
+type: vertical-stack
+cards:
+  - type: tile
+    entity: binary_sensor.my_car_trip_in_progress
+    name: Driving
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: tile
+        entity: sensor.my_car_fuel_level
+        name: Fuel
+      - type: tile
+        entity: sensor.my_car_12_v_battery
+        name: 12 V battery
+      - type: tile
+        entity: sensor.my_car_trouble_codes
+        name: Trouble codes
+      - type: tile
+        entity: sensor.my_car_odometer
+        name: Odometer
+  - type: entities
+    title: Last trip
+    entities:
+      - entity: sensor.my_car_last_trip
+        name: Distance
+      - type: attribute
+        entity: sensor.my_car_last_trip
+        attribute: duration_min
+        name: Duration
+        suffix: min
+      - type: attribute
+        entity: sensor.my_car_last_trip
+        attribute: avg_consumption_l_100km
+        name: Average consumption
+        suffix: l/100 km
+      - type: attribute
+        entity: sensor.my_car_trouble_codes
+        attribute: codes
+        name: Codes
+  - type: history-graph
+    title: 12 V battery, last 7 days
+    hours_to_show: 168
+    entities:
+      - entity: sensor.my_car_12_v_battery
+```
+
+The same examples, in English and Italian: [drivepulse.it/home-assistant_en](https://drivepulse.it/home-assistant_en).
 
 ## Install
 
